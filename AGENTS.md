@@ -7,6 +7,7 @@
 ## Development workflow
 - Run tests with `bun test`.
 - Keep changes focused and follow existing style conventions (ES2022, ESM).
+- Releases: tag `vX.Y.Z`, push the tag, and publish a GitHub release to trigger the build + Homebrew workflows.
 
 ## Safety and invariants
 - Mutating commands must resolve to exactly one target.

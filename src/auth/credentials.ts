@@ -8,8 +8,10 @@ export interface OAuthClientCredentials {
   redirectUri: string;
 }
 
-const CREDENTIALS_ENV = "GDOCS_CREDENTIALS_PATH";
-const REDIRECT_URI_ENV = "GDOCS_REDIRECT_URI";
+const CREDENTIALS_ENV = "DOCSCTL_CREDENTIALS_PATH";
+const CREDENTIALS_ENV_FALLBACK = "GDOCS_CREDENTIALS_PATH";
+const REDIRECT_URI_ENV = "DOCSCTL_REDIRECT_URI";
+const REDIRECT_URI_ENV_FALLBACK = "GDOCS_REDIRECT_URI";
 
 function expandHome(path: string): string {
   if (path.startsWith("~/")) {
@@ -36,7 +38,7 @@ async function isDirectory(path: string): Promise<boolean> {
 }
 
 async function resolveCredentialsPath(): Promise<string> {
-  const envPath = process.env[CREDENTIALS_ENV];
+  const envPath = process.env[CREDENTIALS_ENV] ?? process.env[CREDENTIALS_ENV_FALLBACK];
   if (envPath) {
     const expanded = expandHome(envPath);
     const candidate = (await isDirectory(expanded)) ? join(expanded, "credentials.json") : expanded;
@@ -47,6 +49,8 @@ async function resolveCredentialsPath(): Promise<string> {
   }
 
   const candidates = [
+    expandHome("~/.docsctl/credentials.json"),
+    expandHome("~/.config/docsctl/credentials.json"),
     expandHome("~/.gdocs/credentials.json"),
     expandHome("~/.config/gdocs/credentials.json"),
   ];
@@ -58,12 +62,12 @@ async function resolveCredentialsPath(): Promise<string> {
   }
 
   throw new Error(
-    "Credentials file not found. Set GDOCS_CREDENTIALS_PATH to a credentials.json file or directory."
+    "Credentials file not found. Set DOCSCTL_CREDENTIALS_PATH to a credentials.json file or directory."
   );
 }
 
 function pickRedirectUri(redirectUris: string[]): string {
-  const override = process.env[REDIRECT_URI_ENV];
+  const override = process.env[REDIRECT_URI_ENV] ?? process.env[REDIRECT_URI_ENV_FALLBACK];
   if (override) {
     return override;
   }

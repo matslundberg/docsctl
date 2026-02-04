@@ -11,7 +11,7 @@ import { registerDiffCommands } from "./commands/diff";
 
 export function buildCli(argv = process.argv) {
   let cli = yargs(hideBin(argv))
-    .scriptName("gdocs")
+    .scriptName("docsctl")
     .option("json", { type: "boolean", default: false })
     .option("verbose", { type: "boolean", default: false })
     .option("dry-run", { type: "boolean", default: false })

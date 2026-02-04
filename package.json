@@ -1,10 +1,10 @@
 {
-  "name": "gdocs",
+  "name": "docsctl",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "gdocs": "src/cli/index.ts"
+    "docsctl": "src/cli/index.ts"
   },
   "scripts": {
     "test": "bun test"

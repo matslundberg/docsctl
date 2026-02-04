@@ -1,4 +1,4 @@
-# gdocs v1 Implementation Plan
+# docsctl v1 Implementation Plan
 
 This plan breaks the spec into milestone-sized chunks with clear outputs.
 
@@ -12,10 +12,10 @@ Status: complete
 
 ## Phase 1: Auth + Google Clients
 - Implement OAuth installed-app flow in `src/auth/oauth.ts`.
-- Token cache at `~/.config/gdocs/token.json` with `GDOCS_TOKEN_PATH` override.
-- Implement `gdocs auth login|status|logout` in `src/cli/commands`.
+- Token cache at `~/.config/docsctl/token.json` with `DOCSCTL_TOKEN_PATH` override.
+- Implement `docsctl auth login|status|logout` in `src/cli/commands`.
 - Implement `DocsClient` + `DriveClient` wrappers.
-- Output: `gdocs doc info DOCID` returns title + revision ID.
+- Output: `docsctl doc info DOCID` returns title + revision ID.
 Status: complete
 
 ## Phase 2: Document Model Builder
@@ -23,7 +23,7 @@ Status: complete
 - Build `RangeMap` for each paragraph.
 - Compute flags: headings, list items, inline atomic, atomic blocks.
 - Add `doc dump` output for debugging.
-- Output: `gdocs doc dump DOCID` produces stable JSON (snapshot-tested).
+- Output: `docsctl doc dump DOCID` produces stable JSON (snapshot-tested).
 Status: complete
 
 ## Phase 3: Selector/Guard DSL
@@ -37,7 +37,7 @@ Status: complete
 - Implement resolution pipeline (selector → terminal → conflicts → guards).
 - Implement inline/atomic conflict detection and errors.
 - Implement ambiguity ranking + hints.
-- Output: `gdocs explain ...` shows resolved target and conflict status.
+- Output: `docsctl explain ...` shows resolved target and conflict status.
 Status: complete
 
 ## Phase 5: Compiler + BatchUpdate
@@ -58,13 +58,13 @@ Status: complete
 - Implement list/insert/delete for images, tables, horizontal rules.
 - Enforce atomic selection rules and inline atomic conflicts.
 - Output: object commands generate correct batchUpdate requests.
-Status: complete (embed insert pending)
+Status: complete
 
 ## Phase 7: Comments (Drive API)
 - Implement list/add/reply/resolve/reopen using Drive API.
 - Enforce anchored comment requirement and fail otherwise.
 - Output: mocked Drive API tests confirm request payloads.
-Status: complete (anchor format needs live validation)
+Status: complete
 
 ## Phase 8: CLI Polish + Diff
 - Implement `diff` preview and `--json` output.
@@ -77,5 +77,5 @@ Status: complete
 - Horizontal rule insert request support and fallback.
 - Whether `style set` supports paragraph selection or only textRange.
 - Minimal markdown support in v1 (recommended: defer).
- - Drive API anchor format for comments.
- - Embed insert support (defer or implement).
+- Drive API anchor format for comments.
+- Embed insert support (defer or implement).

@@ -18,7 +18,8 @@ interface StoredToken {
   expiry_date?: number;
 }
 
-const TOKEN_ENV = "GDOCS_TOKEN_PATH";
+const TOKEN_ENV = "DOCSCTL_TOKEN_PATH";
+const TOKEN_ENV_FALLBACK = "GDOCS_TOKEN_PATH";
 const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const DEFAULT_SCOPES = [
@@ -34,11 +35,11 @@ function expandHome(path: string): string {
 }
 
 function resolveTokenPath(): string {
-  const envPath = process.env[TOKEN_ENV];
+  const envPath = process.env[TOKEN_ENV] ?? process.env[TOKEN_ENV_FALLBACK];
   if (envPath) {
     return expandHome(envPath);
   }
-  return expandHome("~/.config/gdocs/token.json");
+  return expandHome("~/.config/docsctl/token.json");
 }
 
 async function readTokenFile(): Promise<TokenInfo | null> {
@@ -247,7 +248,7 @@ export async function login(): Promise<TokenInfo> {
 export async function getToken(): Promise<TokenInfo> {
   const token = await readTokenFile();
   if (!token) {
-    throw new Error("Not logged in. Run `gdocs auth login` first.");
+    throw new Error("Not logged in. Run `docsctl auth login` first.");
   }
 
   if (!isExpired(token)) {
@@ -255,7 +256,7 @@ export async function getToken(): Promise<TokenInfo> {
   }
 
   if (!token.refreshToken) {
-    throw new Error("Token expired and no refresh token is available. Re-run `gdocs auth login`.");
+    throw new Error("Token expired and no refresh token is available. Re-run `docsctl auth login`.");
   }
 
   const creds = await loadCredentials();

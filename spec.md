@@ -1,10 +1,10 @@
-# gdocs v1 Implementation Spec
+# docsctl v1 Implementation Spec
 
 ## 0) Scope and principles
 
 ### Goal
 
-A command-line tool `gdocs` that can **read and modify Google Docs** safely, including:
+A command-line tool `docsctl` that can **read and modify Google Docs** safely, including:
 
 * text edits (insert/replace/delete)
 * styling (bold/italic/link; “code blocks” as paragraph style)
@@ -64,7 +64,7 @@ Docs API does not reliably cover the full comments workflow; use **Drive API v3*
 # 3) Repository / module layout
 
 ```
-gdocs/
+docsctl/
   src/
     cli/
       index.ts                 # yargs entrypoint
@@ -137,9 +137,9 @@ Support at least:
 
 ## 4.2 Token cache
 
-* Store tokens in `~/.config/gdocs/token.json` (or OS-appropriate config dir)
-* Support `GDOCS_TOKEN_PATH` override
-* `gdocs auth login|status|logout`
+* Store tokens in `~/.config/docsctl/token.json` (or OS-appropriate config dir)
+* Support `DOCSCTL_TOKEN_PATH` override
+* `docsctl auth login|status|logout`
 
 ## 4.3 Scopes
 
@@ -165,44 +165,44 @@ Support at least:
 
 ### Doc
 
-* `gdocs doc info DOCID`
-* `gdocs doc outline DOCID [--objects]`
-* `gdocs doc ls DOCID [--select ...]` (lists blocks within selection/scope)
-* `gdocs doc dump DOCID --format json` (internal model dump for debugging; behind `--verbose` or `--debug`)
+* `docsctl doc info DOCID`
+* `docsctl doc outline DOCID [--objects]`
+* `docsctl doc ls DOCID [--select ...]` (lists blocks within selection/scope)
+* `docsctl doc dump DOCID --format json` (internal model dump for debugging; behind `--verbose` or `--debug`)
 
 ### Edit
 
-* `gdocs insert before|after DOCID --select ... (--text "..." | --file path)`
-* `gdocs replace section DOCID --select ... --file path [--mode preserve-nontext]`
-* `gdocs replace match DOCID --select ... --with "..."` (for textRange selections)
-* `gdocs delete DOCID --select ...` (delete a paragraph block, blockRange paragraphs, or an object block depending on selector kind; v1 should keep separate subcommands if ambiguity)
+* `docsctl insert before|after DOCID --select ... (--text "..." | --file path)`
+* `docsctl replace section DOCID --select ... --file path [--mode preserve-nontext]`
+* `docsctl replace match DOCID --select ... --with "..."` (for textRange selections)
+* `docsctl delete DOCID --select ...` (delete a paragraph block, blockRange paragraphs, or an object block depending on selector kind; v1 should keep separate subcommands if ambiguity)
 
 ### Style
 
-* `gdocs style set DOCID --select ... --bold on|off --italic on|off --underline on|off`
-* `gdocs style link DOCID --select ... --url "https://..."` (applies link to selected textRange)
-* `gdocs code insert DOCID --select ... --file snippet.txt [--lang python]`
-* `gdocs code format DOCID --select ...` (applies “code paragraph style” to selected paragraphs)
+* `docsctl style set DOCID --select ... --bold on|off --italic on|off --underline on|off`
+* `docsctl style link DOCID --select ... --url "https://..."` (applies link to selected textRange)
+* `docsctl code insert DOCID --select ... --file snippet.txt [--lang python]`
+* `docsctl code format DOCID --select ...` (applies “code paragraph style” to selected paragraphs)
 
 ### Objects (atomic)
 
-* `gdocs image list DOCID [--select scope]`
-* `gdocs image insert DOCID --select anchor --file img.png [--alt "..."]`
-* `gdocs image delete DOCID --select 'objects(type="image", in=...).nth(2)'`
+* `docsctl image list DOCID [--select scope]`
+* `docsctl image insert DOCID --select anchor --file img.png [--alt "..."]`
+* `docsctl image delete DOCID --select 'objects(type="image", in=...).nth(2)'`
 * same pattern for `table`, `hr`, `object`
 
 ### Comments
 
-* `gdocs comments list DOCID [--open|--resolved]`
-* `gdocs comments add DOCID --select <textRange> --text "..."` (must resolve to textRange)
-* `gdocs comments reply DOCID --id COMMENT_ID --text "..."`
-* `gdocs comments resolve DOCID --id COMMENT_ID`
-* `gdocs comments reopen DOCID --id COMMENT_ID`
+* `docsctl comments list DOCID [--open|--resolved]`
+* `docsctl comments add DOCID --select <textRange> --text "..."` (must resolve to textRange)
+* `docsctl comments reply DOCID --id COMMENT_ID --text "..."`
+* `docsctl comments resolve DOCID --id COMMENT_ID`
+* `docsctl comments reopen DOCID --id COMMENT_ID`
 
 ### Explain & diff
 
-* `gdocs explain <any mutating command ...>`
-* `gdocs diff <any mutating command ...>`
+* `docsctl explain <any mutating command ...>`
+* `docsctl diff <any mutating command ...>`
   Implementation: `explain/diff` can wrap the command parsing but stop at different stages.
 
 ---
@@ -678,7 +678,7 @@ Return structured object:
 ### Replace Billing section text
 
 ```bash
-gdocs replace section DOCID \
+docsctl replace section DOCID \
   --select 'betweenHeadings("Billing","Next").paragraphs().one()' \
   --guard  'all(ifRevision("REV123"), expectContains("Old billing intro"))' \
   --file billing.txt
@@ -687,7 +687,7 @@ gdocs replace section DOCID \
 ### Bold phrase under a heading
 
 ```bash
-gdocs style set DOCID \
+docsctl style set DOCID \
   --select 'under(heading("Summary")).match("Key point", occurrence=1).one()' \
   --bold on
 ```
@@ -695,17 +695,16 @@ gdocs style set DOCID \
 ### Delete 2nd image under Appendix
 
 ```bash
-gdocs image delete DOCID \
+docsctl image delete DOCID \
   --select 'objects(type="image", in=under(heading("Appendix"))).nth(2)'
 ```
 
 ### Add a comment to a matched range
 
 ```bash
-gdocs comments add DOCID \
+docsctl comments add DOCID \
   --select 'under(heading("Risks")).match("uncertain", occurrence=1).one()' \
   --text "Can we quantify this?"
 ```
 
 ---
-

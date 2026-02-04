@@ -125,11 +125,8 @@ export async function executeCommand(tokens: string[]): Promise<CommandExecution
     }
     case "objectInsert": {
       const resolved = await resolveSelectionForFlags(parsed.docId, parsed.flags);
-      if (parsed.objectType === "embed") {
-        throw new Error("Embed insert not supported.");
-      }
       let data: Record<string, unknown> = {};
-      if (parsed.objectType === "image") {
+      if (parsed.objectType === "image" || parsed.objectType === "embed") {
         const file = getStringFlag(parsed.flags, "file");
         if (!file) throw new Error("Provide --file with a public image URL.");
         const uri = (await readTextFile(file)).trim();

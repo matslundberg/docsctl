@@ -43,6 +43,7 @@ jobs:
           version=${tag#v}
           sha_arm64=$(cut -d" " -f1 docsctl-darwin-arm64.sha256)
           sha_amd64=$(cut -d" " -f1 docsctl-darwin-amd64.sha256)
+          mkdir -p Formula
           cat > Formula/docsctl.rb <<EOF
           class Docsctl < Formula
             desc "CLI for safely reading/updating Google Docs"

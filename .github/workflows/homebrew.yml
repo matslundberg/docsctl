@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
     steps:
       - name: Checkout tap repo
         uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag=${{ github.event.release.tag_name || github.event.inputs.tag }}
+          tag=$TAG
           if [ -z "$tag" ]; then
             echo "Missing release tag." >&2
             exit 1
@@ -39,7 +40,7 @@ jobs:
       - name: Generate formula
         if: ${{ env.HOMEBREW_TAP_TOKEN != '' }}
         run: |
-          tag=${{ github.event.release.tag_name || github.event.inputs.tag }}
+          tag=$TAG
           version=${tag#v}
           sha_arm64=$(cut -d" " -f1 docsctl-darwin-arm64.sha256)
           sha_amd64=$(cut -d" " -f1 docsctl-darwin-amd64.sha256)
@@ -76,5 +77,5 @@ jobs:
           git config user.name "docsctl-bot"
           git config user.email "docsctl-bot@users.noreply.github.com"
           git add Formula/docsctl.rb
-          git commit -m "docsctl ${tag}"
+          git commit -m "docsctl ${TAG}"
           git push

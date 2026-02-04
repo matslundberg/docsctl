@@ -1,5 +1,7 @@
 # docsctl
 
+> Experimental: this CLI is under active development and may change.
+
 `docsctl` is a CLI for safely reading and updating Google Docs with a selector/guard DSL. It supports
 document inspection, targeted edits, style changes, atomic object handling, comments, and diff/explain
 previews.
@@ -17,6 +19,13 @@ previews.
 
 ```bash
 bun install
+```
+
+### Homebrew
+
+```bash
+brew tap matslundberg/docsctl
+brew install docsctl
 ```
 
 ## Authentication

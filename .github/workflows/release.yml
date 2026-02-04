@@ -28,6 +28,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
       - name: Build binary
         run: bun build --compile src/cli/index.ts --target ${{ matrix.target.bun-target }} --outfile docsctl
       - name: Package

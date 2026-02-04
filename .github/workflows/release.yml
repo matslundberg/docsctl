@@ -1,0 +1,38 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target:
+          - name: darwin-amd64
+            bun-target: bun-darwin-x64
+          - name: darwin-arm64
+            bun-target: bun-darwin-arm64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Build binary
+        run: bun build --compile src/cli/index.ts --target ${{ matrix.target.bun-target }} --outfile docsctl
+      - name: Package
+        run: |
+          tar -czf docsctl-${{ matrix.target.name }}.tar.gz docsctl
+          shasum -a 256 docsctl-${{ matrix.target.name }}.tar.gz > docsctl-${{ matrix.target.name }}.sha256
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} \
+            docsctl-${{ matrix.target.name }}.tar.gz \
+            docsctl-${{ matrix.target.name }}.sha256

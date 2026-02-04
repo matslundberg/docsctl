@@ -78,3 +78,8 @@ docsctl diff edit replace match DOCID --select 'match("old", occurrence=1)' --wi
 ```bash
 bun test
 ```
+
+## Homebrew
+
+Releases publish prebuilt binaries and update the Homebrew tap automatically.
+See `homebrew/README.md` for the tap setup requirements.

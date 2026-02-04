@@ -3,12 +3,18 @@ name: homebrew
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. v0.1.0)"
+        required: true
 
 permissions:
   contents: read
 
 jobs:
   update-tap:
+    if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout tap repo
@@ -20,12 +26,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag=${{ github.event.release.tag_name }}
+          tag=${{ github.event.release.tag_name || github.event.inputs.tag }}
+          if [ -z "$tag" ]; then
+            echo "Missing release tag." >&2
+            exit 1
+          fi
           gh release download "$tag" -R ${{ github.repository }} -p "docsctl-*.tar.gz"
           gh release download "$tag" -R ${{ github.repository }} -p "docsctl-*.sha256"
       - name: Generate formula
         run: |
-          tag=${{ github.event.release.tag_name }}
+          tag=${{ github.event.release.tag_name || github.event.inputs.tag }}
           version=${tag#v}
           sha_arm64=$(cut -d" " -f1 docsctl-darwin-arm64.sha256)
           sha_amd64=$(cut -d" " -f1 docsctl-darwin-amd64.sha256)

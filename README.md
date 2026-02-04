@@ -37,6 +37,13 @@ Place a Google OAuth `credentials.json` file in one of:
 
 Or set `DOCSCTL_CREDENTIALS_PATH` to a directory or file.
 
+### Create `credentials.json`
+
+1. Go to the Google Cloud Console → APIs & Services → Credentials.
+2. Create an OAuth client ID of type **Desktop app**.
+3. Download the JSON file and save it as `credentials.json`.
+4. Place it in `~/.docsctl/credentials.json` (or set `DOCSCTL_CREDENTIALS_PATH`).
+
 Login:
 
 ```bash

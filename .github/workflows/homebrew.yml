@@ -14,7 +14,6 @@ permissions:
 
 jobs:
   update-tap:
-    if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout tap repo
@@ -22,7 +21,9 @@ jobs:
         with:
           repository: matslundberg/homebrew-docsctl
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
       - name: Download assets
+        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -34,6 +35,7 @@ jobs:
           gh release download "$tag" -R ${{ github.repository }} -p "docsctl-*.tar.gz"
           gh release download "$tag" -R ${{ github.repository }} -p "docsctl-*.sha256"
       - name: Generate formula
+        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
         run: |
           tag=${{ github.event.release.tag_name || github.event.inputs.tag }}
           version=${tag#v}
@@ -66,6 +68,7 @@ jobs:
           end
           EOF
       - name: Commit and push
+        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
         run: |
           git config user.name "docsctl-bot"
           git config user.email "docsctl-bot@users.noreply.github.com"
